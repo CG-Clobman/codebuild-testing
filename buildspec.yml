@@ -9,9 +9,6 @@ phases:
       - export AWS_REGION=us-east-1
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 683746102303.dkr.ecr.${AWS_REGION}.amazonaws.com
       - REPOSITORY_URI=683746102303.dkr.ecr.us-east-1.amazonaws.com/api
-      - docker pull nginx
-      - docker tag nginx 683746102303.dkr.ecr.${AWS_REGION}.amazonaws.com/api:nginx
-      - docker push 683746102303.dkr.ecr.${AWS_REGION}.amazonaws.com/api:nginx
   build:
     commands:
       - echo Build started on date
