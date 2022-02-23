@@ -20,4 +20,4 @@ phases:
     - echo Build completed on date
     - echo Pushing Docker image...
     - docker push $REPOSITORY_URI:$IMAGE_TAG
-    - cat Dockerrun.aws.json.tpl | sed  -e "s#@@IMAGE_TAG@@#$IMAGE_TAG#g" > /tmp/Dockerrun.aws.json
+    - cat Dockerrun.aws.json | sed  -e "s#@@IMAGE_TAG@@#$IMAGE_TAG#g" > /tmp/Dockerrun.aws.json
