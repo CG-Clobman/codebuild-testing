@@ -21,3 +21,15 @@ phases:
     - echo Pushing Docker image...
     - docker push $REPOSITORY_URI:$IMAGE_TAG
     - cat Dockerrun.aws.json | sed  -e "s#@@IMAGE_TAG@@#$IMAGE_TAG#g" > /tmp/Dockerrun.aws.json
+    - export stage=$testenvvar
+    - export REGION=us-east-1
+    - export docker_tag_version=$IMAGE_TAG
+    - export app_short_name=api
+    - bucketname="$elasticbeanstalk-us-east-1-683746102303-$app_short_name"
+    - env_name="eb-$stage-$stage-$app_short_name"
+    - objectkey="$stage-app-name-$app_short_name.zip"
+    - app_name="$stage-app-name-$app_short_name"
+    - zip -j $objectkey /tmp/Dockerrun.aws.json
+    - aws s3 cp $objectkey s3://$bucketname/$objectkey
+    - aws elasticbeanstalk create-application-version --application-name $app_name --version-label $docker_tag_version --source-bundle S3Bucket=$bucketname,S3Key=$objectkey
+    - aws --region $REGION elasticbeanstalk update-environment --environment-name $env_name --version-label $docker_tag_version
