@@ -2,17 +2,17 @@ version: 0.2
 
 env:
   variables:
-    S3_BUCKET: eb-deploy-app
-    STAGE: testenvvar
-    REGION: us-east-1
-    APP_SHORT_NAME: api
-    BUCKETNAME: eb-deploy-app
+    S3_BUCKET: "eb-deploy-app"
+    STAGE: "testenvvar"
+    REGION: "us-east-1"
+    APP_SHORT_NAME: "api"
+    BUCKETNAME: "eb-deploy-app"
   exported-variables:
-    - S3_BUCKET
-    - STAGE
-    - REGION
-    - APP_SHORT_NAME
-    - BUCKETNAME
+    - "S3_BUCKET"
+    - "STAGE"
+    - "REGION"
+    - "APP_SHORT_NAME"
+    - "BUCKETNAME"
 phases:
   pre_build:
     commands:
