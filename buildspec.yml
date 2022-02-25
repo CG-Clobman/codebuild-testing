@@ -5,7 +5,7 @@ env:
     S3_BUCKET: "eb-deploy-app"
     STAGE: "testenvvar"
     REGION: "us-east-1"
-    DOCKER_TAG_VERSION: "$IMAGE_TAG"
+    DOCKER_TAG_VERSION: $IMAGE_TAG
     APP_SHORT_NAME: "api"
     BUCKETNAME: "eb-deploy-app"
   exported-variables:
