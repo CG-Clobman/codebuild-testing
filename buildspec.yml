@@ -1,12 +1,18 @@
 version: 0.2
 
-
+env:
+  variables:
+    S3_BUCKET: "eb-deploy-app"
+    STAGE: "testenvvar"
+    REGION: "us-east-1"
+    APP_SHORT_NAME: "api"
+    BUCKETNAME: "eb-deploy-app"
 phases:
   pre_build:
     commands:
       - echo Logging in to Amazon ECR...
       - aws --version
-      - export AWS_REGION=us-east-1
+      - AWS_REGION="$REGION"
       - aws ecr get-login-password --region $AWS_REGION | docker login --username AWS --password-stdin 683746102303.dkr.ecr.${AWS_REGION}.amazonaws.com
       - REPOSITORY_URI=683746102303.dkr.ecr.us-east-1.amazonaws.com/api
       - IMAGE_TAG=build-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
@@ -21,11 +27,7 @@ phases:
     - echo Pushing Docker image...
     - docker push $REPOSITORY_URI:$IMAGE_TAG
     - cat Dockerrun.aws.json | sed  -e "s#@@IMAGE_TAG@@#$IMAGE_TAG#g" > /tmp/Dockerrun.aws.json
-    - export stage=testenvvar
-    - export REGION=us-east-1
     - export docker_tag_version=$IMAGE_TAG
-    - export app_short_name=api
-    - export bucketname="eb-deploy-app"
     - export env_name="eb-$stage-$stage-$app_short_name"
     - export objectkey="$stage-app-name-$app_short_name.zip"
     - export app_name="$stage-app-name-$app_short_name"
