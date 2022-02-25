@@ -5,14 +5,12 @@ env:
     S3_BUCKET: "eb-deploy-app"
     STAGE: "testenvvar"
     REGION: "us-east-1"
-    DOCKER_TAG_VERSION: $IMAGE_TAG
     APP_SHORT_NAME: "api"
     BUCKETNAME: "eb-deploy-app"
   exported-variables:
     - S3_BUCKET
     - STAGE
     - REGION
-    - DOCKER_TAG_VERSION
     - APP_SHORT_NAME
     - BUCKETNAME
 phases:
@@ -35,6 +33,7 @@ phases:
     - echo Pushing Docker image...
     - docker push $REPOSITORY_URI:$IMAGE_TAG
     - cat Dockerrun.aws.json | sed  -e "s#@@IMAGE_TAG@@#$IMAGE_TAG#g" > /tmp/Dockerrun.aws.json
+    - export docker_tag_version=$IMAGE_TAG
     - export env_name="eb-$stage-$stage-$app_short_name"
     - export objectkey="$stage-app-name-$app_short_name.zip"
     - export app_name="$stage-app-name-$app_short_name"
