@@ -25,7 +25,7 @@ phases:
     - export REGION=us-east-1
     - export docker_tag_version=$IMAGE_TAG
     - export app_short_name=api
-    - export bucketname="elasticbeanstalk-us-east-1-683746102303"
+    - export bucketname="eb-deploy-app"
     - export env_name="eb-$stage-$stage-$app_short_name"
     - export objectkey="$stage-app-name-$app_short_name.zip"
     - export app_name="$stage-app-name-$app_short_name"
