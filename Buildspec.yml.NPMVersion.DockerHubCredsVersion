@@ -1,0 +1,40 @@
+version: 0.2
+
+
+phases:
+  pre_build:
+    commands:
+      - echo Initiating pre-build processes...
+      - aws --version
+      - export AWS_REGION=$REGION
+      - echo Logging in DockerHUB
+      - docker login -u $DOCKERHUB_USERNAME -p $DOCKERHUB_PASSWORD
+      - REPOSITORY_URI=$CURRENT_ACCOUNT_ID.dkr.ecr.$REGION.amazonaws.com/worker
+      - IMAGE_TAG=nodejs-$(echo $CODEBUILD_BUILD_ID | awk -F":" '{print $2}')
+  build:
+    commands:
+      - echo Build started on date...
+      - echo Building the Docker image...
+      - export NPM_TOKEN=$NPM_TOKEN
+      - docker build --build-arg NPM_TOKEN=${NPM_TOKEN} -t $REPOSITORY_URI:$IMAGE_TAG .
+  post_build:
+    commands:
+    - echo Build completed on date
+    - echo Logging in to Amazon ECR...
+    - $(aws ecr get-login --region $AWS_DEFAULT_REGION --no-include-email)
+    - echo Pushing Docker image...
+    - docker push $REPOSITORY_URI:$IMAGE_TAG
+    - cat Dockerrun.aws.json | sed  -e "s#@@IMAGE_TAG@@#$IMAGE_TAG#g" > /tmp/Dockerrun.aws.json
+    - export stage=dev
+    - export REGION=us-east-1
+    - export docker_tag_version=$IMAGE_TAG
+    - export app_short_name=worker
+    - export bucketname="$STAGE-coolcats-app-bucket-worker"
+    - export env_name="eb-$stage-$stage-$app_short_name"
+    - export objectkey="$stage-app-name-$app_short_name.zip"
+    - export app_name="$stage-app-name-$app_short_name"
+    - zip -j "$objectkey" /tmp/Dockerrun.aws.json
+    - aws s3 cp $objectkey s3://$bucketname/$objectkey
+    - aws elasticbeanstalk create-application-version --application-name $app_name --version-label $docker_tag_version --source-bundle S3Bucket=$bucketname,S3Key=$objectkey
+    - aws --region $REGION elasticbeanstalk update-environment --environment-name $env_name --version-label $docker_tag_version
+    - echo Finished the build process! Application deployment to the EB environment called eb-... processing! 
